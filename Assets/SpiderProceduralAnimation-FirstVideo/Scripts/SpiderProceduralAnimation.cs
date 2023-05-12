@@ -75,9 +75,12 @@ public class SpiderProceduralAnimation : MonoBehaviour
 
     void FixedUpdate()
     {
+
+        //Velocity Calculation 
         velocity = transform.position - lastBodyPos;
         velocity = (velocity + smoothness * lastVelocity) / (smoothness + 1f);
 
+        //Checking the velocity magnitude
         if (velocity.magnitude < 0.000025f)
             velocity = lastVelocity;
         else
@@ -87,12 +90,12 @@ public class SpiderProceduralAnimation : MonoBehaviour
         Vector3[] desiredPositions = new Vector3[nbLegs];
         int indexToMove = -1;
         float maxDistance = stepSize;
-        for (int i = 0; i < nbLegs; ++i)
+        for (int i = 0; i < nbLegs; ++i)            //Checking if any leg is out of the distance
         {
             desiredPositions[i] = transform.TransformPoint(defaultLegPositions[i]);
 
             float distance = Vector3.ProjectOnPlane(desiredPositions[i] + velocity * velocityMultiplier - lastLegPositions[i], transform.up).magnitude;
-            if (distance > maxDistance)
+            if (distance > maxDistance)         //distance magnitude check
             {
                 maxDistance = distance;
                 indexToMove = i;
@@ -124,12 +127,26 @@ public class SpiderProceduralAnimation : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        for (int i = 0; i < nbLegs; ++i)
+       
+    }
+    [Header("Gizmons")]
+    [SerializeField] float _targetGizmosRadius;
+    private void OnDrawGizmos()
+    {
+        /*for (int i = 0; i < nbLegs; ++i)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(legTargets[i].position, 0.05f);
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(transform.TransformPoint(defaultLegPositions[i]), stepSize);
+        }*/
+        foreach(Transform t in legTargets)
+        {
+        Gizmos.color = Color.green;
+            Gizmos.DrawSphere(t.position, _targetGizmosRadius);
+        Gizmos.color = Color.red;
+            Gizmos.DrawLine(t.position, t.position + Vector3.up * stepHeight);
         }
+        
     }
 }
